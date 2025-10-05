@@ -1,0 +1,16 @@
+what each file will do (plain-english)
+	•	src/server.js — starts the HTTP server (boots express app).
+	•	src/app.js — configures express (json, rate limit) and mounts routes.
+	•	src/routes/summary.route.js — defines the /v1/summary HTTP endpoint.
+	•	src/controllers/summary.controller.js — glues request → services → response (no heavy logic).
+	•	src/domain/summary.schema.js — validates the query params using zod.
+	•	src/services/time.service.js — converts IST (your input) to UTC (Binance) and back, aligns minutes.
+	•	src/services/binance.service.js — fetches candles (klines) from Binance REST API.
+	•	src/services/analysis.service.js — does the math: net %, high/low, simple segments (pump/dump).
+	•	src/middlewares/validate.middleware.js — runs zod validation and exposes req.validatedQuery.
+	•	src/middlewares/error.middleware.js — one place to format errors as JSON.
+	•	src/middlewares/rateLimit.middleware.js — keeps your API safe from spam.
+	•	src/utils/logger.js — tiny logger (pino).
+	•	src/config/constants.js — reads base URL from env, easy to reuse.
+
+we’ll now create tiny versions of each so you can run end-to-end quickly.
