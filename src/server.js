@@ -10,17 +10,16 @@ function normalizePort(val) {
   if (n >= 0) return n;              // port number
   return 3000;
 }
+
+//Create the real HTTP Server, wiring Node's TCP/HTTP layer to our Express app (request handler)
 const server = http.createServer(app);
 server.keepAliveTimeout = 65_000;  // keep-alive > 60s (common LB idle timeout)
 server.headersTimeout   = 66_000;  // must be > keepAliveTimeout
 server.requestTimeout   = 600_000; // 10 min cap per request
 
-server.listen(PORT, onListening);
-function onListening() {
-  const addr = server.address();
-  const bind = typeof addr === 'string' ? addr : `http://localhost:${addr.port}`;
-  console.log(`▶ Server listening at ${bind} | PID ${process.pid} | NODE_ENV=${process.env.NODE_ENV || 'development'}`);
-}
+server.listen(PORT, () => {
+    console.log(`HTTP server listening on http://localhost:${PORT}`);
+});
 
 server.on('error', onError);
 function onError(err) {
