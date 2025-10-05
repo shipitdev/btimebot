@@ -1,0 +1,16 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16",
+    "express": "^4",
+    "express-rate-limit": "^7",
+    "lru-cache": "^10",
+    "luxon": "^3",
+    "pino": "^9",
+    "zod": "^3"
+  }
+}
