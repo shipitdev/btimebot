@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { BINANCE_BASE_URL } = require('../config');
 
-async function fetchCandles(symbol, interval = '1m') {
+async function fetchCandle(symbol, interval = '1m') {
     const response = await axios.get(`${BINANCE_BASE_URL}/klines`, {
         params: { symbol, interval, limit: 60}
     });
@@ -17,4 +17,4 @@ async function fetchCandles(symbol, interval = '1m') {
     };
 };
 
-module.exports = {fetchCandles};
+module.exports = {fetchCandle};
