@@ -1,1 +1,94 @@
 /src/notes.txt
+
+what each file will do (plain-english)
+	•	src/server.js — starts the HTTP server (boots express app).
+	•	src/app.js — configures express (json, rate limit) and mounts routes.
+	•	src/routes/summary.route.js — defines the /v1/summary HTTP endpoint.
+	•	src/controllers/summary.controller.js — glues request → services → response (no heavy logic).
+	•	src/domain/summary.schema.js — validates the query params using zod.
+	•	src/services/time.service.js — converts IST (your input) to UTC (Binance) and back, aligns minutes.
+	•	src/services/binance.service.js — fetches candles (klines) from Binance REST API.
+	•	src/services/analysis.service.js — does the math: net %, high/low, simple segments (pump/dump).
+	•	src/middlewares/validate.middleware.js — runs zod validation and exposes req.validatedQuery.
+	•	src/middlewares/error.middleware.js — one place to format errors as JSON.
+	•	src/middlewares/rateLimit.middleware.js — keeps your API safe from spam.
+	•	src/utils/logger.js — tiny logger (pino).
+	•	src/config/constants.js — reads base URL from env, easy to reuse.
+
+we’ll now create tiny versions of each so you can run end-to-end quickly.
+
+BTimeBot/
+│
+├── 1️⃣ Input Layer (Frontend or API)
+│   ├── User sends request: symbol + time (eg. BTCUSDT + 16:30)
+│   ├── HTTP Request → Express Route
+│   ├── Middleware → 
+│   │     • validate.js → validate query params (symbol, interval, time)
+│   │     • rateLimit.js → limit number of requests per IP
+│   │     • errorHandler.js → catch all errors and respond consistently
+│   └── Example flow:
+│         Request → validate → rateLimit → controller → errorHandler
+│
+├── 2️⃣ Controller Layer
+│   ├── summary.controller.js
+│   │   ├── parse params (symbol, interval, time)
+│   │   ├── call time.service → normalize to minute
+│   │   ├── call binance.service → fetch candle data
+│   │   ├── call analysis.service → compute pump/dump %
+│   │   └── respond JSON
+│   └── (Later: add controller for alerts, watchlist, history)
+│
+├── 3️⃣ Service Layer (the brain)
+│   ├── binance.service.js
+│   │   ├── fetch candle via REST
+│   │   └── cache results (avoid repeated API calls)
+│   ├── analysis.service.js
+│   │   ├── compute price change, % pump/dump
+│   │   └── detect volume spikes
+│   ├── time.service.js
+│   │   └── normalize time, conversions (ISO ↔ timestamp)
+│   ├── precision.service.js
+│   │   └── handle rounding, numeric formatting
+│   └── (Later: websocket.service.js → live feed)
+│
+├── 4️⃣ Utilities
+│   ├── http.js → axios instance for Binance API
+│   ├── cache.js → in-memory cache (later Redis)
+│   ├── logger.js → unified logs
+│   └── (Later: notifier.js → Discord/Telegram alerts)
+│
+├── 5️⃣ Config
+│   ├── config/
+│   │   ├── constants.js → static constants like:
+│   │   │     • DEFAULT_INTERVALS = ['1m','3m','5m','15m','30m','1h']
+│   │   │     • BINANCE_BASE_URL = 'https://api.binance.com/api/v3'
+│   │   │     • PUMP_THRESHOLD = 1.5
+│   │   │     • DUMP_THRESHOLD = 1.5
+│   │   ├── env.js → read environment variables:
+│   │   │     • PORT
+│   │   │     • REDIS_URL
+│   │   │     • TELEGRAM_TOKEN
+│   │   └── index.js → combine constants + env for easy import
+│
+├── 6️⃣ Core App
+│   ├── app.js → express instance, routes, middlewares
+│   │     • app.use('/api', rateLimit)
+│   │     • route-level validate middleware
+│   │     • centralized errorHandler at the end
+│   ├── server.js → starts the server
+│   └── routes/ → each domain route (summary, watchlist, etc)
+│
+├── 7️⃣ Persistence (Later stage)
+│   ├── SQLite or MongoDB → store user queries, alerts
+│   └── Redis → cache candles
+│
+├── 8️⃣ Background Workers (Later)
+│   ├── scheduler.service.js (node-cron)
+│   ├── websocket.service.js → live Binance stream
+│   └── alert.service.js → triggers on large pumps/dumps
+│
+└── 9️⃣ External Interfaces
+    ├── Binance REST API (/klines, /ticker/price)
+    ├── Binance WebSocket streams
+    ├── Telegram bot / Discord webhook (optional output)
+    └── Docker container (for deployment)

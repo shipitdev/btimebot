@@ -1,5 +1,4 @@
-module.exports = {
-    BINANCE_BASE_URL : process.env.BINANCE_BASE_URL || 'https://api.binance.com',
-    DEFAULT_INTERVAL : process.env.DEFAULT_INTERVAL || '1m',
-    INPUT_TZ: process.env.TZ_INPUT || 'Asia/Kolkata'
-};
+const DEFAULT_INTERVALS = ['1m','3m','5m','15m','30m','1h'];
+const BINANCE_BASE_URL = 'https://api.binance.com/api/v3';
+
+module.exports = { DEFAULT_INTERVALS, BINANCE_BASE_URL };

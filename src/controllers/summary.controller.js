@@ -1,11 +1,15 @@
-async function getSummary(req,res,next) {
-    try {
-        //pretend we did some work: read params, call a service/DB, compute a summary...
-        const result = { summary: 'Hello from v1 summary!', at: new Date().toISOString() };
-        res.status(200).json(result); // hands back the result to express -> client
-    } catch (err) {
-        next(err);
-    }
-};
+const { fetchCandle } = require('../services/binance.service');
+const { analyzeCandle } = require('../services/analysis.service');
 
-module.exports = { getSummary };
+async function getCandleSummary(req, res, next) {
+    try {
+        const { symbol, interval } = req.query;
+        const candle = await fetchCandle(symbol.toUpperCase(), interval || '1m');
+        const analysis = analyzeCandle(candle);
+        res.json(analysis);
+    } catch (err) {
+        next(err); // pass to errorHandler
+    }
+}
+
+module.exports = { getCandleSummary };

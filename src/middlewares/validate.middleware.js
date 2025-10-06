@@ -1,12 +1,14 @@
-module.exports = function validate(schema) {
-    return (req,res,next) => {
-        const result = schema.safeParse(req.query);
-        if (!result.success) {
-            return res.status(400).json({
-                error: {code: 400, message: 'Validation failed', details: result.error.flatten()}
-            });
-        }
-        req.validatedQuery = result.data; // put clean data here
-        next();
-    };
-};
+const { DEFAULT_INTERVALS } = require('../config');
+
+function validateCandleRequest(req, res, next) {
+    const { symbol, interval } = req.query;
+
+    if (!symbol) return res.status(400).json({ error: 'symbol is required' });
+    if (interval && !DEFAULT_INTERVALS.includes(interval)) {
+        return res.status(400).json({ error: 'Invalid interval. Allowed: ' + DEFAULT_INTERVALS.join(', ') });
+    }
+
+    next();
+}
+
+module.exports = { validateCandleRequest };
