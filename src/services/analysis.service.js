@@ -1,11 +1,13 @@
 function analyzeCandle(candle) {
-    const { open, high, low, close } = candle;
-    return {
-        ...candle,
-        pumpPercent: ((high - open)/open * 100).toFixed(2),
-        dumpPercent: ((open - low)/open * 100).toFixed(2),
-        netPercent: ((close - open)/open * 100).toFixed(2)
-    };
+  const { open, close, volume } = candle;
+  const percentChange = (((close - open) / open) * 100).toFixed(2);
+  const movement = percentChange > 0 ? "Pump" : percentChange < 0 ? "Dump" : "Flat";
+
+  return {
+    movement,
+    percentChange: `${percentChange}%`,
+    volume,
+  };
 }
 
 module.exports = { analyzeCandle };

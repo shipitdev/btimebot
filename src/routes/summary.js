@@ -1,8 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const { getCandleSummary } = require('../controllers/summary.controller');
-const { validateCandleRequest } = require('../middlewares/validate');
+const express = require("express");
+const { getCandleSummary } = require("../controllers/summary.controller");
+const { validateRequest } = require("../middlewares/validateRequest");
 
-router.get('/analysis', validateCandleRequest, getCandleSummary);
+const router = express.Router();
+
+router.get("/", validateRequest, getCandleSummary);
 
 module.exports = router;

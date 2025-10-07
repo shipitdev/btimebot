@@ -1,20 +1,29 @@
-const axios = require('axios');
-const { BINANCE_BASE_URL } = require('../config');
+const axios = require("axios");
+const { BINANCE_API } = require("../config/env");
+const { getCandleTimestamps } = require("./time.service");
 
-async function fetchCandle(symbol, interval = '1m') {
-    const response = await axios.get(`${BINANCE_BASE_URL}/klines`, {
-        params: { symbol, interval, limit: 60}
-    });
-    const data = response.data[0];
-    return {
-        openTime: data[0],
-        open: parseFloat(data[1]),
-        high: parseFloat(data[2]),
-        low: parseFloat(data[3]),
-        close: parseFloat(data[4]),
-        volume: parseFloat(data[5]),
-        closeTime: data[6]
-    };
-};
+async function fetchCandle(symbol, interval, date, time) {
+  const { startTime, endTime, targetDate } = getCandleTimestamps(date, time, interval);
 
-module.exports = {fetchCandle};
+  const { data } = await axios.get(`${BINANCE_API}/klines`, {
+    params: { symbol, interval, startTime, endTime, limit: 1 },
+  });
+
+  if (!data.length) return null;
+
+  const [openTime, open, high, low, close, volume] = data[0];
+
+  return {
+    symbol,
+    interval,
+    open: parseFloat(open),
+    close: parseFloat(close),
+    high: parseFloat(high),
+    low: parseFloat(low),
+    volume: parseFloat(volume),
+    openTime,
+    targetDate,
+  };
+}
+
+module.exports = { fetchCandle };

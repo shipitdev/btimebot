@@ -1,4 +1,6 @@
-const app = require('./app');
-const { PORT } = require('./config');
+const app = require("./app");
+const { PORT } = require("./config/env");
 
-app.listen(PORT, () => console.log(`BTimeBot running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

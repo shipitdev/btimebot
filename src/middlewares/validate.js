@@ -1,14 +1,11 @@
-const { DEFAULT_INTERVALS } = require('../config');
-
-function validateCandleRequest(req, res, next) {
-    const { symbol, interval } = req.query;
-
-    if (!symbol) return res.status(400).json({ error: 'symbol is required' });
-    if (interval && !DEFAULT_INTERVALS.includes(interval)) {
-        return res.status(400).json({ error: 'Invalid interval. Allowed: ' + DEFAULT_INTERVALS.join(', ') });
-    }
-
-    next();
+function validateRequest(req, res, next) {
+  const { symbol, interval, date, time } = req.query;
+  if (!symbol || !interval || !date || !time) {
+    return res.status(400).json({
+      message: "Missing required parameters: symbol, interval, date, time",
+    });
+  }
+  next();
 }
 
-module.exports = { validateCandleRequest };
+module.exports = { validateRequest };
