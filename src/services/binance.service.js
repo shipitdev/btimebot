@@ -2,12 +2,27 @@ const axios = require("axios");
 const { BINANCE_API } = require("../config/env");
 const { getCandleTimestamps } = require("./time.service");
 
-async function fetchCandle(symbol, interval, date, time) {
+async function getKlineendpoint(marketType){
+    return marketType==="spot"?"/api/v3/klines" : marketType==="futures"?"/fapi/v1/klines":"/dapi/v1/klines";
+};
+
+async function fetchCandle(symbol, interval, date, time,marketType) {
   const { startTime, endTime, targetDate } = getCandleTimestamps(date, time, interval);
 
-  const { data } = await axios.get(`${BINANCE_API}/klines`, {
-    params: { symbol, interval, startTime, endTime, limit: 1 },
-  });
+  const base = BINANCE_API[marketType] || BINANCE_API.spot;
+  const endpoint = await getKlineendpoint(marketType);
+  const url = `${base}${endpoint}`;
+
+  const params = {
+    symbol,
+    interval,
+    startTime,
+    endTime,
+    limit: 1,
+  };
+
+  const response = await axios.get(url, { params });
+  const data = response.data;
 
   if (!data.length) return null;
 
