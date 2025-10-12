@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json());
 app.use(rateLimiter);
-app.use("./routes", summaryRoutes);
+app.use("/api/summary", summaryRoutes);
 app.use(errorHandler);
 
 module.exports = app;

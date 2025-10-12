@@ -1,3 +1,4 @@
+// /middlewares/validateRequest.js
 function validateRequest(req, res, next) {
   const { symbol, interval, date, time } = req.query;
   if (!symbol || !interval || !date || !time) {
