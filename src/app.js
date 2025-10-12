@@ -7,11 +7,7 @@ const app = express();
 
 app.use(express.json());
 app.use(rateLimiter);
-
-// Routes
-app.use("/api/summary", summaryRoutes);
-
-// Error handler (must be last)
+app.use("./routes", summaryRoutes);
 app.use(errorHandler);
 
 module.exports = app;
